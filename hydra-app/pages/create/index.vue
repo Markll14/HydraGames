@@ -1,8 +1,11 @@
 <template>
     <div class="create">
         <div class="book">
-                        <div class="book__form">
-                            <form @submit.prevent="AddCreation" class="form">
+                        <div @submit.prevent="routeExplore" class="book__form">
+                            <h1 class="book__heading">
+                                Upload and share all you're wildest creations with us.
+                            </h1>
+                            <form class="form">
                                     <div class="u-margin-bottom-medium">
                                             <h2 class="heading-secondary u-margin-bottom-small">
                                                 Create here
@@ -12,6 +15,10 @@
                                 <div class="form__group">
                                     <input type="file" class="form__input" placeholder="Image" name="title" required @change="onFileSelected">
                                     <label for="image" class="form__label">title</label>
+
+                                <div class="form__group">
+                                    <AppButton class="btn btn--green" @click="onUpload" > Upload Image &rarr;</AppButton>
+                                </div>
                                 </div>
 
                                 <div class="form__group">
@@ -36,37 +43,25 @@
                              
 
                                 <div class="form__group">
-                                    <AppButton class="btn btn--green" @click="onUpload"> Add Creation &rarr;</AppButton>
+                                    <AppButton class="btn btn--green" @click="AddCreation" > Add Creation &rarr;</AppButton>
                                 </div>
 
                             </form>
                         </div>
                     </div>
+                    
+                        <!-- <ImageCard :url="url"/> -->
+                    
+                
     </div>  
 </template>
 
-//  <AppControlInput v-model="editedPost.author">Author Name</AppControlInput>
-        
-<AppControlInput v-model="editedPost.title">Title</AppControlInput>
-        
-<AppControlInput v-model="editedPost.thumbnailLink">Thumbnail Link</AppControlInput>
-        
-<AppControlInput
-          control-type="textarea"
-          v-model="editedPost.content">Content</AppControlInput>
-        
-<AppButton type="submit">Save</AppButton>
-        
-<AppButton
-          type="button"
-          style="margin-left: 10px"
-          btn-style="cancel"
-          @click="onCancel">Cancel
-</AppButton>
 
 <script>
+import ImageCard from '../../components/ImageCard/ImageCard'
 import axios from 'axios'
 import {db} from '../../firebase/init.js';
+import {storage} from '../../firebase/init.js'
 import slugify from 'slugify';
 import AppButton from '@/components/UI/AppButton';
 import AppControlInput from '@/components/UI/AppControlInput';
@@ -75,20 +70,23 @@ export default {
     data() {
         return {
             title: '',
+            isUploaded: false,
             description: '',
             another: '',
             authors: [],
             slug: '',
             selectedFile: '',
-            downloadUrl: ''
+            imageurl: []
         }
     },
     components: {
         axios,
         db,
+        storage,
         slugify,
         AppButton,
-        AppControlInput
+        AppControlInput,
+        ImageCard
     },
     methods: {
 
@@ -105,9 +103,22 @@ export default {
                 }
             })
             .then(res => {
-                return console.log(res)
+                console.log('below is the file name')
+                console.log(this.selectedFile)
+                return storage.ref(this.selectedFile.name).put(this.selectedFile).then( (fileSnapshot) => {
+                    return fileSnapshot.ref.getDownloadURL()
+                    console.log(fileSnapshot)
+                })
+                .then(url => {
+                    console.log(url);
+                    this.imageurl.push(url);
+                    console.log(this.imageurl)
+                    this.isUploaded= true;
+                    console.log(this.isUploaded);
+                })
             })
         },
+
 
         AddCreation() {
             if(this.title) {
@@ -118,12 +129,13 @@ export default {
                     lower: true
                 })
                 db.collection('Assets').add({
-                   
+                    imageurl: this.imageurl,
                     title: this.title,
                     description: this.description,
                     authors: this.authors,
                     slug: this.slug
                 }).then(() => {
+                    console.log("This is where we should get routed back to explore")
                     this.$router.push({name: 'explore'})
                 }).catch( err => {
                     console.log(err);
@@ -141,6 +153,10 @@ export default {
             this.authors = this.authors.filter(author => {
                 return author != auth
             })
+        },
+
+        routeExplore() {
+            this.$router.push({name: 'explore'});
         }
     }
 }
@@ -150,6 +166,25 @@ export default {
 @import '../../assets/styles/variables.scss';
 @import '../../assets/styles/mixins.scss';
 
+.book__heading {
+    font-size: 3.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: inline-block;
+    background-image: linear-gradient(
+        to right,
+        $color-primary-light,
+        $color-primary-dark
+    );
+
+    background-clip: text;
+    color: transparent;
+}
+.book__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .form {
     width: 80rem;
     margin: 5rem;

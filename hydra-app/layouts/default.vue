@@ -1,15 +1,27 @@
 <template>
-  <div>
-    <Navigation/>
-    <nuxt/>
+  <div class="wrapper-main">
+    <main class="main-flex">
+        <nuxt-link to="/">
+          <div class="header__logo-box">
+              <img class="header__logo" src="@/assets/images/createdTrans.png" alt="Logo">
+          </div>
+        </nuxt-link>
+        <Navigation/>
+        <nuxt/>
+    </main>
+
+     <Footer class="footer"/>
   </div>
+
 </template>
 
 <script>
 import Navigation from '../components/Navigation'
+import Footer from '../components/Footer/Footer'
 export default {
   components: {
-    Navigation
+    Navigation,
+    Footer
   }
   
 }
@@ -19,11 +31,13 @@ export default {
 <style>
 body {
   height: 100vh;
+  position: relative;
+
+
 }
 
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Raleway',  sans-serif;
     font-size: 62.5%;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -33,6 +47,36 @@ html {
   box-sizing: border-box;
   height: 100vh;
 }
+
+.wrapper-main {
+    display: flex;
+    min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.main-flex {
+  flex: 1;
+}
+
+
+footer {
+position: relative;
+width: 100%;
+
+}
+
+.header__logo-box {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+
+        z-index: 10;
+    }
+
+    .header__logo {
+        height: 8rem;
+    }
 
 *,
 *:before,

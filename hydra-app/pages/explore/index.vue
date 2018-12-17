@@ -1,21 +1,20 @@
 <template>
     <div class="wrapper">
-        <header class="header">
-            <ul class="filter">
-                <li class="filter--items"></li>
-                <li class="filter--items"></li>
-                <li class="filter--items"></li>
-                <li class="filter--items"></li>
-            </ul>
-        </header>
-        <div class="container">
 
+        <div class="header">
+            <h2 class="header__welcome">Welcome to the explore page where you can view the communitys creations</h2>
         </div>
+
+        <div class="container">
             <ImageCard :cards="cards" />
+        </div>
+            
+
         </div>
 </template>
 
 <script>
+import store from '../../store/index.js'
 import axios from 'axios'
 import ImageCard from '../../components/ImageCard/ImageCard'
 import {db} from '../../firebase/init.js'
@@ -26,7 +25,8 @@ export default {
         ImageCard,
         db,
         axios,
-        storage
+        storage,
+        store
     },
     data() {
         return {
@@ -44,42 +44,15 @@ export default {
                 console.log(card)
                 // the card.id is adding an id property onto the let card variable
                 card.id = doc.id
-                this.cards.push(card)
+                this.cards.push(card)    
+                this.$store.commit('setCards', this.cards)
                 console.log(this.cards)
             })
         })
         
-    },
+    }
 
-//     created() {  
-//       const storageRef = storage.ref()
-//       const imagesRef = storageRef.child('AshAngelPaid.jpg');
-//       axios.get(imagesRef.getDownloadURL()).then( (url) => {
-//           console.log(url);
-//       }).catch(function(error) {
 
-//   // A full list of error codes is available at
-//   // https://firebase.google.com/docs/storage/web/handle-errors
-//   switch (error.code) {
-//     case 'storage/object-not-found':
-//       // File doesn't exist
-//       break;
-
-//     case 'storage/unauthorized':
-//       // User doesn't have permission to access the object
-//       break;
-
-//     case 'storage/canceled':
-//       // User canceled the upload
-//       break;
-
-//     case 'storage/unknown':
-//       // Unknown error occurred, inspect the server response
-//       break;
-//   }
-// })
-            
-//     }
 }
 </script>
 
@@ -87,25 +60,21 @@ export default {
 <style lang="scss" scoped>
 
 .container {
+    font-family: 'Raleway', sans-serif;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+
 }
 
-.filter {
+.header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 10rem;
-    background-color: aqua;
+    justify-content: center;
 
-
-    &--items {
-        width: 4rem;
-        height: 4rem;
-        background-color: lightcoral;
+    &__welcome {
+        font-size: 4rem;
     }
 }
+
 
 
 </style>

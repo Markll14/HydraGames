@@ -15,9 +15,12 @@
     "axios": "^0.18.0",
     "cross-env": "^5.2.0",
     "firebase": "^5.5.9",
+    "jquery": "^3.3.1",
     "nuxt": "^2.0.0",
     "nuxt-fontawesome": "^0.3.0",
-    "slugify": "^1.3.3"
+    "slugify": "^1.3.3",
+    "vue-slick": "^1.1.15",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "eslint-config-prettier": "^3.1.0",

@@ -15,8 +15,7 @@ module.exports = {
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {rel: 'stylesheet', href: 'http://code.ionicframework.com/1.3.3/css/ionic.min.css'}
+      {rel:"stylesheet", href: "https://fonts.googleapis.com/css?family=Raleway:400,700" }
 
     ]
   },
@@ -37,6 +36,7 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vue-slick', ssr: false }
   ],
 
   /*
@@ -50,12 +50,14 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    /*
-    ** You can extend webpack config here
-    */
-    extend(config, ctx) {
-
-    
-    }
+    // extend(config, ctx) {
+    // if (ctx.isServer) {
+    //     config.externals = [
+    //       nodeExternals({
+    //         whitelist: [/^vue-slick/]
+    //       })
+    //     ]
+    //   }
+    // }
   }
 }

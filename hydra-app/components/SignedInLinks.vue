@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ul class=navigation__list @click="$emit('close')">
+        <ul class=navigation__list @click="close">
             
             <li class=navigation__item >
                 <nuxt-link to="/create" class=navigation__link> Create </nuxt-link> 
@@ -42,6 +42,11 @@ export default {
     data() {
         return {
 
+        }
+    },
+    methods: {
+        close() {
+            document.getElementById("navi-toggle").checked = false;
         }
     }
 }
