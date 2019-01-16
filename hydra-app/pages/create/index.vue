@@ -58,6 +58,7 @@
 
 
 <script>
+import store from '@/store/index'
 import ImageCard from '../../components/ImageCard/ImageCard'
 import axios from 'axios'
 import {db} from '../../firebase/init.js';
@@ -86,7 +87,8 @@ export default {
         slugify,
         AppButton,
         AppControlInput,
-        ImageCard
+        ImageCard,
+        store
     },
     methods: {
 
@@ -133,6 +135,7 @@ export default {
                     title: this.title,
                     description: this.description,
                     authors: this.authors,
+                    user: this.$store.state.user,
                     slug: this.slug
                 }).then(() => {
                     console.log("This is where we should get routed back to explore")

@@ -29,7 +29,8 @@ if (!firebase.apps.length) {
 
 const db = firebase.firestore()
 db.settings({ timestampsInSnapshots: true });
+const GoogleProvider = new firebase.auth.GoogleAuthProvider()
 const storage = firebase.storage()
 const auth = firebase.auth();
 
-export { storage, db, auth }
+export { storage, db, auth, GoogleProvider }

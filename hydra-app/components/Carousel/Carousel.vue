@@ -47,17 +47,15 @@ import '../../node_modules/slick-carousel/slick/slick-theme.css';
       }
     },
       created(){
-        //fetach data from firestore
+        //fetch data from firestore
         db.collection('Assets').get()
         .then(snapshot => {
             snapshot.forEach( doc => {
                 let card = doc.data()
-                console.log(card)
                 // the card.id is adding an id property onto the let card variable
                 card.id = doc.id
                 this.cards.push(card)    
                 this.$store.commit('setCards', this.cardsArray)
-                console.log(this.cardsArray)
             })
         })
         

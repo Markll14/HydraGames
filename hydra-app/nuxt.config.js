@@ -46,6 +46,10 @@ module.exports = {
 
   ],
 
+  router: {
+    middleware: 'log'
+  },
+
   /*
   ** Build configuration
   */
@@ -59,5 +63,8 @@ module.exports = {
     //     ]
     //   }
     // }
+  },
+  env: {
+      fbAPIKey: 'AIzaSyBbO5Fv3fd1nKYmCZp0-LjiSjk-yM6FAag'
   }
 }

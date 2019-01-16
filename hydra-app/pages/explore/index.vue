@@ -41,12 +41,10 @@ export default {
         .then(snapshot => {
             snapshot.forEach( doc => {
                 let card = doc.data()
-                console.log(card)
                 // the card.id is adding an id property onto the let card variable
                 card.id = doc.id
                 this.cards.push(card)    
                 this.$store.commit('setCards', this.cards)
-                console.log(this.cards)
             })
         })
         
