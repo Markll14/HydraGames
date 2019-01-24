@@ -13,6 +13,7 @@
 import {db} from '@/firebase/init'
 import store from '@/store/index'
 export default {
+    middleware: 'check-auth',
     data() {
         return {
             userAssets: []

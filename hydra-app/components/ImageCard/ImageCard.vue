@@ -1,39 +1,67 @@
 <template>
  <div class="container">
-      <nuxt-link class="container-link" v-for="card in cards" :to=" '/explore/' + card.slug " :key="card.id">
+      <nuxt-link class="container-link" v-for="(card,index) in cards"  :key="index" :to="'/explore/' + card.slug">
                 <div class="card">
-                    <img class="card__image" :src="card.imageurl" alt="Ash Angel"/>
+                    <img class="card__image" :src="card.imageurl[0]" alt="Ash Angel"/>
                     <div class="card__info">
-                        <h3 class="card__info--title"> {{ card.title}}</h3>
-                        <h5 class="card__info--author">Authors {{card.authors}}</h5>
-                        <p class="card__info--desc">{{ card.description}}</p>
+                        <h3 class="card__info--title"> {{ card.title}} </h3>
+                        <h5 class="card__info--author">Authors: {{card.authors[0]}}</h5>
+                        <p class="card__info--desc"> {{ card.description}} </p>
                         <div class="card__info--icons">
-                          
+                            
+                            <i class="material-icons">speaker_notes</i>
+                            <i class="material-icons">favorite</i>
                         </div>
                     </div>
                 </div>
         </nuxt-link>
+        <i @click="download" class="material-icons">cloud_download</i>
  </div>
            
 </template>
 
 <script>
-
+import {storage} from '@/firebase/init'
+import store from '@/store/index'
 export default {
     name: 'ImageCard',
     data() {
         return {
             id: '',
-            slug: ''
+            slug: '',
+            cards: []
         }
     },
-    props: [
-        "cards"
-    ],
+    methods: {
+        download() {
+          
+          const fileRef = storage.ref('AshAngelPaid.jpg')
+          
+          var blob = null;
+          console.log(fileRef)
+          fileRef.getDownloadURL().then( (url) => {
+              console.log("this is returned from firebase ")
+              console.log(url)
+              var xhr = new XMLHttpRequest()
+              xhr.responseType = 'blob';
+              xhr.onload = (event) => {
+                  blob = xhr.response
+              }
+              xhr.open('GET', url)
+              xhr.send()
+          }).then(() => {
+
+          }).catch( (err) => {
+              console.log(err)
+          })
+        }
+    },
 
     created() {
-        console.log('Below is CARDS info from FireStore')
-        console.log(this.cards);
+        this.$store.state.loadedCards.forEach( (doc) => {
+
+          this.cards.push(doc)
+        })
     }
 
     
@@ -98,6 +126,14 @@ export default {
         transform: scale(1.05);
         box-shadow: $prime-box-shadow-big
     }
+}
+
+i {
+    transition: all .2s;
+    cursor: pointer;
+}
+i:hover {
+    transform: scale(1.2);
 }
 
 .icon {

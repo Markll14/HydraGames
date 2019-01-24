@@ -1,6 +1,6 @@
 <template>
     <div class="signup">
-        <form @submit.prevent="signup" class="signup-card">
+        <form @submit.prevent="auth" class="signup-card">
             <div class="signup-card__field">
                 <label for="email">Email</label>
                 <input class="signup-card__field--input" type="email" name="email" v-model="email">
@@ -9,14 +9,14 @@
                 <label for="password">password</label>
                 <input class="signup-card__field--input" type="password" name="password" v-model="password">
             </div>
-            <!-- <div class="signup-card__field">
+            <div class="signup-card__field">
                 <label for="username">username</label>
                 <input class="signup-card__field--input" type="text" name="username" v-model="username">
-            </div> -->
+            </div>
             <p class="feedback" v-if="feedback">{{feedback}}</p>
             <div class="signup-card__field">
                 <Button type="submit" class="btn btn-green">{{isLogin ? "Login" : "SignUp"}}</Button>
-                <button type="button" @click="isLogin = !isLogin" class="btn btn-green">Switch to {{isLogin ? "SignUp" : "Login"}} </button>
+                <button type="button" @click=" isLogin = !isLogin" class="btn btn-green">Switch to {{isLogin ? "SignUp" : "Login"}} </button>
             </div>
             
         </form>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import Cookie from 'js-cookie'
 import axios from 'axios'
 import store from '@/store/index.js'
 import slugify from 'slugify'
@@ -45,58 +46,80 @@ export default {
         Button
     },
     methods: {
-        signup() {
-            //checking if username exists within our database
-                        // here we are sending a HTTP request through axios to firebases API. the first url is for logging a user in,
-                        // the second authUrl is for signing a user up. only if isLogin is true
-                            this.$store.dispatch('authenticateUser', 
-                            {
-                            isLogin: this.isLogin,
-                            email: this.email,
-                            password:  this.password
-                            })
-                            .then( () => {
+        
+        auth() {
 
-                                this.$router.push('/explore')
+            if(this.isLogin) {
+                console.log('I am logging in ')
+                 firebase.auth().signInWithEmailAndPassword(this.email,this.password)
+                .then((cred) => {
+                    this.$store.commit('setUser', cred.user.uid)
+                    this.$store.commit('setUsername', this.username)
+                    Cookie.set('username', this.username)
+                    Cookie.set('uid', cred.user.uid)
+                    this.saveUserData(cred.user)
+                    }). then( () => {
+                        this.$router.push({name: 'explore'})
+                    }).catch((err) => {
+                        this.feedback = err.message
+                    }) 
+            } else {
+            // checking if username exists within our database
+                        // creates a user through email and password
+                if(this.username && this.email && this.password) {
+                    this.slug = slugify(this.username, {
+                        replacement:'-',
+                        remove: /[$*_+~.()'"\-:@]/g,
+                        lower: true
+                    })
+                    // is creating a variable that stores slug then checks whether it exists, if it does we send feedback
+                    let ref = db.collection('users').doc(this.slug)
+                    ref.get().then( (doc) => {
+                        if(doc.exists) {
+                            this.feedback ="This Username already exists"
+                        } else {
+                            console.log("I am signing up ")
+                            firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                            .then((cred) => {
+                                ref.set({
+                                    username: this.username,
+                                    user_id: cred.user.uid
+                                })
+                                this.$store.commit('setUser', cred.user.uid)
+                                this.$store.commit('setUsername', this.username)
+                                Cookie.set('username', this.username)
+                                Cookie.set('uid', cred.user.uid)
+                                this.saveUserData(cred.user)
                             })
-                        }
+                            .then(() => {
+                                const user = firebase.auth().currentUser
+                                user.updateProfile({
+                                    displayName: this.username
+                                })
+                                this.$router.push({name: 'explore'})
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                // err is caught by catch and has a property called message
+                                this.feedback = err.message
+                            })
+                            }
+                        })
+                    }
+                }          
+                
+                },
+                saveUserData(info) {
+                    localStorage.setItem('user-id', info.uid)
+                    localStorage.setItem('email', this.email)
+                    localStorage.setItem('username', this.username)
+                }
+            }                    
     }
-}
+
                         
                 
 
-
-// // creates a user through email and password
-// if(this.email && this.password) {
-//                 this.slug = slugify(this.username, {
-//                     replacement:'-',
-//                     remove: /[$*_+~.()'"\-:@]/g,
-//                     lower: true
-//                 })
-//                 // is creating a variable that stores slug then checks whether it exists, if it does we send feedback
-//                 let ref = db.collection('users').doc(this.slug)
-//                 ref.get().then( (doc) => {
-//                     if(doc.exists) {
-//                         this.feedback ="This Username already exists"
-//                     } else
-                        // firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-                        // .then((cred) => {
-                        //     ref.set({
-                        //         username: this.username,
-                        //         user_id: cred.user.uid
-                        //     })
-                        //     this.$store.commit('setUser', cred.user.uid)
-                        //     this.$store.commit('setUsername', this.username)
-                        //     localStorage.setItem('user_id', cred.user.uid)
-                        // })
-                        // .then(() => {
-                        //     this.$router.push({name: 'explore'})
-                        // })
-                        // .catch(err => {
-                        //     console.log(err)
-                        //     // err is caught by catch and has a property called message
-                        //     this.feedback = err.message
-                        // })
 </script>
 
 <style lang="scss" scoped>
@@ -146,5 +169,16 @@ export default {
         }
     }
 </style>
+
+// this.$store.dispatch('authenticateUser', 
+//                             {
+//                             isLogin: this.isLogin,
+//                             email: this.email,
+//                             password:  this.password
+//                             })
+//                             .then( () => {
+
+//                                 this.$router.push('/explore')
+//                             })
 
 

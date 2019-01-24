@@ -16,7 +16,6 @@
 
 <script>
 import Button from '@/components/UI/ButtonGreen'
-import {mapState } from 'vuex'
 export default {
     data() {
         return {

@@ -6,7 +6,7 @@
         </div>
 
         <div class="container">
-            <ImageCard :cards="cards" />
+            <ImageCard />
         </div>
             
 
@@ -20,6 +20,7 @@ import ImageCard from '../../components/ImageCard/ImageCard'
 import {db} from '../../firebase/init.js'
 import {storage} from '../../firebase/init.js'
 export default {
+    middleware: ['newUpload', 'check-auth'],
     name: "explore",
     components: {
         ImageCard,
@@ -30,24 +31,7 @@ export default {
     },
     data() {
         return {
-            cards: [],
-            downloadUrl: ''
         }
-    },
-    
-    created(){
-        //fetach data from firestore
-        db.collection('Assets').get()
-        .then(snapshot => {
-            snapshot.forEach( doc => {
-                let card = doc.data()
-                // the card.id is adding an id property onto the let card variable
-                card.id = doc.id
-                this.cards.push(card)    
-                this.$store.commit('setCards', this.cards)
-            })
-        })
-        
     }
 
 

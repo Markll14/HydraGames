@@ -5,8 +5,8 @@
       ref="slick" 
       :options="slickOptions"
     >
-      <nuxt-link v-for="card in cards" :to="'/explore'" :key="card.id">
-        <img class="carousel__img" :src="card.imageurl" alt="">
+      <nuxt-link v-for="card in imageUrl" :to="'/explore'" :key="card.id">
+        <img class="carousel__img" :src="card" alt="">
       </nuxt-link>
         
 
@@ -20,7 +20,7 @@ import '../../node_modules/slick-carousel/slick/slick.css';
 import '../../node_modules/slick-carousel/slick/slick-theme.css';
   export default {
     data: () => ({
-        cardsArray:[],
+      imageUrl: [],
         'slickComp': '',
         slickOptions: {
             slidesToShow: 3,
@@ -39,24 +39,10 @@ import '../../node_modules/slick-carousel/slick/slick-theme.css';
            this.slickComp = 'Slick'
         })
     },
-    computed: {
-      cards() {
-        return this.$store.state.loadedCards.filter((url) => {
-          return url.imageurl
-        })
-      }
-    },
       created(){
-        //fetch data from firestore
-        db.collection('Assets').get()
-        .then(snapshot => {
-            snapshot.forEach( doc => {
-                let card = doc.data()
-                // the card.id is adding an id property onto the let card variable
-                card.id = doc.id
-                this.cards.push(card)    
-                this.$store.commit('setCards', this.cardsArray)
-            })
+        this.$store.state.loadedCards.forEach( (doc) => {
+
+          this.imageUrl.push(doc.imageurl[0])
         })
         
     },

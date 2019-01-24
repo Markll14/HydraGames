@@ -17,6 +17,10 @@ module.exports = {
     link: [
       {rel:"stylesheet", href: "https://fonts.googleapis.com/css?family=Raleway:400,700" }
 
+    ],
+    link : [
+      {  href:"https://fonts.googleapis.com/icon?family=Material+Icons", rel:"stylesheet"
+    }
     ]
   },
 

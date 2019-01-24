@@ -1,6 +1,7 @@
 <template>
     <div class="create">
         <div class="book">
+                    
                         <div @submit.prevent="routeExplore" class="book__form">
                             <h1 class="book__heading">
                                 Upload and share all you're wildest creations with us.
@@ -10,20 +11,32 @@
                                             <h2 class="heading-secondary u-margin-bottom-small">
                                                 Create here
                                             </h2>
-                                        </div>
+                                    </div>
+                                <div class="book__choice">
+                                    <input type="text" class="book__choice--input">
+                                    <label for="">Choose your type of upload ... </label>
+                                    <button @click="choice" class="book__choice-select"><i  class="material-icons">arrow_downward</i></button>
+                                    <div v-if="showChoice" class="book__choice--show">
+                                        <p @click="selectedChoice = 'Image'" class="book__choice--show-item">Image</p>
+                                        <p @click="selectedChoice = 'Video'" class="book__choice--show-item">Video</p>
+                                        <p @click="selectedChoice = 'Audio'" class="book__choice--show-item">Audio</p>
+                                    </div>
+                                </div>
 
                                 <div class="form__group">
                                     <input type="file" class="form__input" placeholder="Image" name="title" required @change="onFileSelected">
                                     <label for="image" class="form__label">title</label>
 
                                 <div class="form__group">
-                                    <AppButton class="btn btn--green" @click="onUpload" > Upload Image &rarr;</AppButton>
+                                    <AppButton class="btn btn--green" @click="onUpload" > Upload Asset &rarr;</AppButton>
+                                    <p class="upload">{{ this.uploadProgress}}</p>
+                                    <p class="uploadCheck">{{isUploaded? "Your Good To Go!" : " please wait to add creation till finished"}}</p>
                                 </div>
                                 </div>
 
                                 <div class="form__group">
                                     <input type="text" class="form__input" placeholder="Title" name="title" required  v-model="title">
-                                    <label for="title" class="form__label">title</label>
+                                    <label for="title" class="form__label"></label>
                                 </div>
 
                                 <div class="form__group">
@@ -67,9 +80,13 @@ import slugify from 'slugify';
 import AppButton from '@/components/UI/AppButton';
 import AppControlInput from '@/components/UI/AppControlInput';
 export default {
+    middleware: 'check-auth',
     name: 'Create',
     data() {
         return {
+            selectedChoice: '',
+            showChoice: null,
+            uploadProgress:'',
             title: '',
             isUploaded: false,
             description: '',
@@ -92,6 +109,10 @@ export default {
     },
     methods: {
 
+        choice() {
+            this.showChoice = !this.showChoice
+        },
+
         // we are setting our selectedFile property to be equal to the information of the file that is accessible by our event that has access to it when the input was changed and the onFileSelected was initiated 
         onFileSelected(event) {
             this.selectedFile = event.target.files[0]
@@ -101,7 +122,7 @@ export default {
             formData.append('image', this.selectedFile, this.selectedFile.name)
             axios.post('https://us-central1-hydra-games.cloudfunctions.net/uploadFile', formData,{
             onUploadProgress: uploadEvent => {
-                console.log('upload progress: ' + Math.round(uploadEvent.loaded/ uploadEvent.total *100) + '%')
+                this.uploadProgress = 'upload progress: ' + Math.round(uploadEvent.loaded/ uploadEvent.total *100) + '%'
                 }
             })
             .then(res => {
@@ -139,7 +160,7 @@ export default {
                     slug: this.slug
                 }).then(() => {
                     console.log("This is where we should get routed back to explore")
-                    this.$router.push({name: 'explore'})
+                    this.$router.push({name: 'users/'})
                 }).catch( err => {
                     console.log(err);
                 })
